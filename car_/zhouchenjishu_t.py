@@ -4,6 +4,7 @@ import os
 import numpy as np 
 import tkinter as tk
 import tkinter.font as tkFont
+import tkinter.ttk as ttk
 import imutils
 import time
 from car_detector.pyramid import pyramid
@@ -277,67 +278,171 @@ def count_1():
     cv2.destroyAllWindows()
 
 
+def zhaoHe_():
+	pass
+
+
+def chaXun_():
+	pass
+
+
 root = tk.Tk()
 
 v1 = tk.StringVar()
 v2 = tk.StringVar()
 v3 = tk.StringVar()
 v4 = tk.StringVar()
+v5 = tk.StringVar() # ID_NO
+v6 = tk.StringVar() # shuRu_NO
 #v4.set("test")
 
-ft = tkFont.Font(family = 'Fixdsys',size = 28,weight = tkFont.BOLD)
+ft = tkFont.Font(family = 'Fixdsys',size = 20,weight = tkFont.BOLD)
 
 root.title('轴承计数')
-root.geometry('600x840')
+root.geometry('960x600')
 
-#cvs = tk.Canvas(root,bg = 'white')
-#cvs.pack(padx =10,pady = 10)
-#imgfm = tk.LabelFrame(root)
-#imgfm.pack(padx =10,pady = 10)
 
-#tuPian = tk.Button(imgfm,text = 'temp')
+#tuPian = tk.Button(root,text = 'temp')
 #tuPian.pack(padx =5,pady=5)
-tuPian = tk.Button(root,text = 'temp')
-tuPian.pack(padx =5,pady=5)
 
 countFm = tk.LabelFrame(root)
-countFm.pack(padx = 10 ,pady =10)
+countFm.pack(padx = 10 ,pady =10,fill = "x")
 
-lbzs = tk.Label(countFm,text = '总数:',font = ft,anchor = tk.NW)
-lbzs.grid(row = 0,column= 0)
+ID_lb = tk.Label(countFm,text = '订单|指示书编号:',font = ft,anchor = tk.NW)
+ID_lb.grid(row = 0,column= 1)
 
-lbdq = tk.Label(countFm,text = '当前数量:',font = ft,anchor = tk.NW)  
-lbdq.grid(row = 1 ,column= 0)
+ID_NO = tk.Entry(countFm,textvariable = v5,font = ft)  
+ID_NO.grid(row = 0 ,column= 2)
+
 
 xinghao = tk.Label(countFm,text = '型号:',font = ft,anchor = tk.NW)  
-xinghao.grid(row = 2 ,column= 0)
+xinghao.grid(row = 1 ,column= 0)
 
-lbzsl = tk.Entry(countFm,textvariable = v1,font = ft)
-lbzsl.grid(row = 0,column= 1)
+XH = tk.Entry(countFm,textvariable = v4,validate='focusout',validatecommand=test,invalidcommand=test1,font = ft)# 'focusout'
+XH.grid(row = 1 ,column= 1)
+
+IDShuLiang_lb = tk.Label(countFm,text = '订单|指示书数量:',font = ft,anchor = tk.NW)
+IDShuLiang_lb.grid(row = 1,column= 2,padx =5,pady=5)
+
+IDShuLiang_NO = tk.Label(countFm,textvariable = v5,font = ft,anchor = tk.NW)  
+IDShuLiang_NO.grid(row = 1 ,column= 3,padx =5,pady=5)
+
+
+count1 = tk.Button(countFm,text = '检测(数量：)',font = ft,command = count_1)
+count1.grid(row = 2,column= 0,padx =5,pady=5)
 
 lbdql = tk.Entry(countFm,textvariable = v2,font = ft)
-lbdql.grid(row = 1,column= 1)
+lbdql.grid(row = 2,column= 1,padx =5,pady=5)
 
-XH= tk.Entry(countFm,textvariable = v4,validate='focusout',validatecommand=test,invalidcommand=test1,font = ft)# 'focusout'
-XH.grid(row = 2 ,column= 1)
+#lbdq = tk.Label(countFm,text = '当前数量:',font = ft,anchor = tk.NW)  
+#lbdq.grid(row = 2 ,column= 1)
+
+add1 = tk.Button(countFm,text = '累计(数量：)',font = ft,command = add_1)
+add1.grid(row = 2,column= 2,padx =5,pady=5)
+
+lbzsl = tk.Entry(countFm,textvariable = v1,width = 4,font = ft)
+lbzsl.grid(row = 2,column= 3,padx =5,pady=5)
+
+#lbzs = tk.Label(countFm,text = '总数:',font = ft,anchor = tk.NW)
+#lbzs.grid(row = 2,column= 3)
+
 
 lbfm = tk.LabelFrame(root)
-lbfm.pack(padx =10,pady = 10)
+lbfm.pack(padx =10,pady = 10,fill = "x")
 
-login1 = tk.Button(lbfm,text = '登陆',font = ft,command = login_1)
-login1.grid(row = 0,column= 0,padx =5,pady=5)
+qingLing_bt = tk.Button(lbfm,text = '清零',width = 10,font = ft,command = clear_)
+qingLing_bt.grid(row = 0,column= 0,padx =10,pady=5)
 
-add1 = tk.Button(lbfm,text = '+',font = ft,command = add_1)
-add1.grid(row = 0,column= 1,padx =5,pady=5)
+login1_bt = tk.Button(lbfm,text = '登陆',width = 10,font = ft,command = login_1)
+login1_bt.grid(row = 0,column= 1,padx =10,pady=5)
 
-count1 = tk.Button(lbfm,text = '计数',font = ft,command = count_1)
-count1.grid(row = 0,column= 2,padx =5,pady=5)
+zhaoHe_bt = tk.Button(lbfm,text = '照合',width = 10,font = ft,command = zhaoHe_)
+zhaoHe_bt.grid(row = 0,column= 2,padx =10,pady=5)
 
-quit1 = tk.Button(lbfm,text = '退出',font = ft,command = root.quit)
-quit1.grid(row = 1,column= 1,padx =5,pady=5)
+chaXun_bt = tk.Button(lbfm,text = '查询',width = 10,font = ft,command = chaXun_)
+chaXun_bt.grid(row = 0,column= 3,padx =10,pady=5)
 
-cl = tk.Button(lbfm,text = '清零',font = ft,command = clear_)
-cl.grid(row = 1,column= 0,padx =5,pady=5)
+quit1 = tk.Button(lbfm,text = '退出',width = 10,font = ft,command = root.quit)
+quit1.grid(row = 0,column= 5,padx =10,pady=5)
+
+
+shuRu_lb = tk.Label(root,text = "读取指示书&型号二维码：")  
+shuRu_lb.pack(padx =10,pady = 0)
+
+shuRu_NO = tk.Entry(root,textvariable = v6)
+shuRu_NO.focus_set()
+shuRu_NO.pack(padx =10,pady = 0,fill = "x",)
+
+#使用Treeview组件实现表格功能
+
+frame = tk.Frame(root)
+
+frame.place(x=10, y=300, width=940, height=280)
+
+#滚动条
+
+scrollBar = tk.Scrollbar(frame)
+
+scrollBar.pack(side=tk.RIGHT, fill=tk.Y)
+
+#Treeview组件，6列，显示表头，带垂直滚动条
+
+tree = ttk.Treeview(frame,columns=('c1', 'c2', 'c3','c4', 'c5', 'c6'),show="headings",yscrollcommand=scrollBar.set)
+
+#设置每列宽度和对齐方式
+
+tree.column('c1', width=40, anchor='center')
+
+tree.column('c2', width=200, anchor='center')
+
+tree.column('c3', width=200, anchor='center')
+
+tree.column('c4', width=120, anchor='center')
+
+tree.column('c5', width=100, anchor='center')
+
+tree.column('c6', width=280, anchor='center')
+
+#设置每列表头标题文本
+
+tree.heading('c1', text='ID')
+
+tree.heading('c2', text='订单|指示书编号')
+
+tree.heading('c3', text='产品型号')
+
+tree.heading('c4', text='数量')
+
+tree.heading('c5', text='记录时间')
+
+tree.heading('c6', text='图片位置')
+
+tree.pack(side=tk.LEFT, fill=tk.Y)
+
+#Treeview组件与垂直滚动条结合
+
+scrollBar.config(command=tree.yview)
+
+#定义并绑定Treeview组件的鼠标单击事件
+
+def treeviewClick(event):
+
+    pass
+
+tree.bind('<Button-1>', treeviewClick)
+
+
+
+#插入演示数据
+def tree_data(values=[]):
+	for i in range(len(values)):
+		tree.insert('', i, values=values[i])
+	
+
+val = [["1","000105138955","ELATD8-P9-B10","10","2018.5.2 10:10","./IMGS/000105138955_1.jpg"],["2","000105138955","ELATD8-P9-B10","20","2018.5.2 10:10","./IMGS/000105138955_2.jpg"]]
+tree_data(val)
+
+#运行程序，启动事件循环
 
 root.mainloop()
 
