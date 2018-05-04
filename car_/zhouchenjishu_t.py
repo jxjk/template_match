@@ -295,25 +295,30 @@ v4 = tk.StringVar()
 v5 = tk.StringVar() # ID_NO
 v6 = tk.StringVar() # shuRu_NO
 #v4.set("test")
+v3.set("30")
+v4.set("ELATD8-P9-B10")
+v5.set("000105138955")
+v6.set("000105138955#31000002237-20")
 
-ft = tkFont.Font(family = 'Fixdsys',size = 20,weight = tkFont.BOLD)
+ft = tkFont.Font(family = 'Fixdsys',size = 18,weight = tkFont.BOLD)
+ft20 = tkFont.Font(family = 'Fixdsys',size = 21,weight = tkFont.BOLD)
+ft12 = tkFont.Font(family = 'Fixdsys',size = 12,weight = tkFont.BOLD)
 
 root.title('轴承计数')
 root.geometry('960x600')
 
 
-#tuPian = tk.Button(root,text = 'temp')
-#tuPian.pack(padx =5,pady=5)
+tuPian = tk.Button(root,text = 'temp',width=50,height=50)
+tuPian.place(x=10, y=10, width=100, height=162)#.pack(side=tk.TOP,padx =5,pady=5)
 
 countFm = tk.LabelFrame(root)
-countFm.pack(padx = 10 ,pady =10,fill = "x")
+countFm.place(x=110, y=10, width=840, height=162)#.pack(side=tk.RIGHT,padx = 10 ,pady =10)#,fill = "x"
 
 ID_lb = tk.Label(countFm,text = '订单|指示书编号:',font = ft,anchor = tk.NW)
 ID_lb.grid(row = 0,column= 1)
 
 ID_NO = tk.Entry(countFm,textvariable = v5,font = ft)  
 ID_NO.grid(row = 0 ,column= 2)
-
 
 xinghao = tk.Label(countFm,text = '型号:',font = ft,anchor = tk.NW)  
 xinghao.grid(row = 1 ,column= 0)
@@ -324,7 +329,7 @@ XH.grid(row = 1 ,column= 1)
 IDShuLiang_lb = tk.Label(countFm,text = '订单|指示书数量:',font = ft,anchor = tk.NW)
 IDShuLiang_lb.grid(row = 1,column= 2,padx =5,pady=5)
 
-IDShuLiang_NO = tk.Label(countFm,textvariable = v5,font = ft,anchor = tk.NW)  
+IDShuLiang_NO = tk.Label(countFm,textvariable = v3,font = ft,anchor = tk.NW)  
 IDShuLiang_NO.grid(row = 1 ,column= 3,padx =5,pady=5)
 
 
@@ -334,44 +339,37 @@ count1.grid(row = 2,column= 0,padx =5,pady=5)
 lbdql = tk.Entry(countFm,textvariable = v2,font = ft)
 lbdql.grid(row = 2,column= 1,padx =5,pady=5)
 
-#lbdq = tk.Label(countFm,text = '当前数量:',font = ft,anchor = tk.NW)  
-#lbdq.grid(row = 2 ,column= 1)
-
 add1 = tk.Button(countFm,text = '累计(数量：)',font = ft,command = add_1)
 add1.grid(row = 2,column= 2,padx =5,pady=5)
 
 lbzsl = tk.Entry(countFm,textvariable = v1,width = 4,font = ft)
 lbzsl.grid(row = 2,column= 3,padx =5,pady=5)
 
-#lbzs = tk.Label(countFm,text = '总数:',font = ft,anchor = tk.NW)
-#lbzs.grid(row = 2,column= 3)
-
-
 lbfm = tk.LabelFrame(root)
-lbfm.pack(padx =10,pady = 10,fill = "x")
+lbfm.place(x=10, y=182, width=940, height=68)#.pack(padx =10,pady = 10,fill = "x")
 
-qingLing_bt = tk.Button(lbfm,text = '清零',width = 10,font = ft,command = clear_)
-qingLing_bt.grid(row = 0,column= 0,padx =10,pady=5)
+qingLing_bt = tk.Button(lbfm,text = '清零',width = 10,font = ft20,command = clear_)
+qingLing_bt.grid(row = 0,column= 0,padx =16,pady=5)
 
-login1_bt = tk.Button(lbfm,text = '登陆',width = 10,font = ft,command = login_1)
-login1_bt.grid(row = 0,column= 1,padx =10,pady=5)
+login1_bt = tk.Button(lbfm,text = '登陆',width = 10,font = ft20,command = login_1)
+login1_bt.grid(row = 0,column= 1,padx =12,pady=5)
 
-zhaoHe_bt = tk.Button(lbfm,text = '照合',width = 10,font = ft,command = zhaoHe_)
-zhaoHe_bt.grid(row = 0,column= 2,padx =10,pady=5)
+zhaoHe_bt = tk.Button(lbfm,text = '照合',width = 10,font = ft20,command = zhaoHe_)
+zhaoHe_bt.grid(row = 0,column= 2,padx =12,pady=5)
 
-chaXun_bt = tk.Button(lbfm,text = '查询',width = 10,font = ft,command = chaXun_)
-chaXun_bt.grid(row = 0,column= 3,padx =10,pady=5)
+chaXun_bt = tk.Button(lbfm,text = '查询',width = 10,font = ft20,command = chaXun_)
+chaXun_bt.grid(row = 0,column= 3,padx =12,pady=5)
 
-quit1 = tk.Button(lbfm,text = '退出',width = 10,font = ft,command = root.quit)
-quit1.grid(row = 0,column= 5,padx =10,pady=5)
+quit1 = tk.Button(lbfm,text = '退出',width = 10,font = ft20,command = root.quit)
+quit1.grid(row = 0,column= 5,padx =12,pady=5)
 
 
-shuRu_lb = tk.Label(root,text = "读取指示书&型号二维码：")  
-shuRu_lb.pack(padx =10,pady = 0)
+shuRu_lb = tk.Label(root,text = "读取指示书&型号二维码：",font = ft12)  
+shuRu_lb.place(x=10, y=270, width=200, height=20)#.pack(padx =10,pady = 0)
 
-shuRu_NO = tk.Entry(root,textvariable = v6)
+shuRu_NO = tk.Entry(root,textvariable = v6,font = ft12)
 shuRu_NO.focus_set()
-shuRu_NO.pack(padx =10,pady = 0,fill = "x",)
+shuRu_NO.place(x=210, y=270, width=730, height=20)#.pack(padx =10,pady = 0,fill = "x",)
 
 #使用Treeview组件实现表格功能
 
