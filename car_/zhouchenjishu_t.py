@@ -14,43 +14,60 @@ from dataBase.access import *
 from tkinter.messagebox import *
 from PIL import Image
 from PIL import ImageTk
+import mysql.connector
+
 
 
 def test():
-	#print('here')
-	型号 = v4.get()
-	pathfile = r'dataBase/test.mdb'
-	tablename = r'prov'
-	conn = mdb_conn(pathfile)
-	cur = conn.cursor()
+    config = {'host':'127.0.0.1',
+            'user':'root',
+            'password':'abcd@1234',
+            'port':'3306',
+            'database':'test',
+            'charset':'utf8'
+            }
+    #型号 = '12' 
+    型号 = v4.get()
+    print(型号)
+    try:
+        conn = mysql.connector.Connect(**config)
+    except mysql.connector.Error as e:
+        print('connect fails!{}'.format(e))
 
+    cursor = conn.cursor()
 #查
-	sql = "SELECT * FROM " + tablename + " where 型号 = '" + 型号 +"'"
-	sel_data = mdb_sel(cur, sql)
+    try:
+        sql = "SELECT * FROM  prov WHERE XH = %s" 
+        cursor.execute(sql,(型号,))
+        sel_data = cursor.fetchone()
+        print(sel_data)
+    except mysql.connector.Error as e:
+        print('query error!{}'.format(e))
+    finally:
+        cursor.close()
+        conn.close()
 
-	if sel_data:
-		#print('正确')
-		global img
-		img = Image.open(r"./imgs/" + v4.get() + 'temp.jpg')
-		img = ImageTk.PhotoImage(img)
-		#img = tk.PhotoImage(file = r"./imgs/" + v4.get() + 'temp.gif')
-		tuPian.configure(image=img)
-		XH.configure(bg = 'blue')
-		return True
-	else:
-		#print('错误')
-		img = Image.open(r"./imgs/temp.jpg")
-		img = ImageTk.PhotoImage(img)
-		tuPian.configure(image=img)
-		XH.configure(bg = 'red')
-		return False
-	cur.close()    #关闭游标
-	conn.close()   #关闭数据库连接
+    if sel_data:
+        print('正确')
+        global img
+        img = Image.open(r"./imgs/" + v4.get() + 'temp.jpg')
+        img = ImageTk.PhotoImage(img)
+        #img = tk.PhotoImage(file = r"./imgs/" + v4.get() + 'temp.gif')
+        tuPian.configure(image=img)
+        XH.configure(bg = 'blue')
+        return True
+    else:
+        print('错误')
+        img = Image.open(r"./imgs/temp.jpg")
+        img = ImageTk.PhotoImage(img)
+        tuPian.configure(image=img)
+        XH.configure(bg = 'red')
+        return False
 
 
 def test1():
-	#print('又错了')
-	return True
+    print('又错了')
+    return True
 
 
 def in_range(number,test,thresh = 0.2):
@@ -279,26 +296,27 @@ def count_1():
 
 
 def zhaoHe_():
-	pass
+    pass
 
 
 def chaXun_():
-	pass
+    XH.configure(bg = 'blue')
+    pass
 
 
 root = tk.Tk()
 
 v1 = tk.StringVar()
-v2 = tk.StringVar()
+v2 = tk.StringVar()	
 v3 = tk.StringVar()
 v4 = tk.StringVar()
 v5 = tk.StringVar() # ID_NO
 v6 = tk.StringVar() # shuRu_NO
 #v4.set("test")
-v3.set("30")
-v4.set("ELATD8-P9-B10")
-v5.set("000105138955")
-v6.set("000105138955#31000002237-20")
+#v3.set("30")
+#v4.set("ELATD8-P9-B10")
+#v5.set("000105138955")
+#v6.set("000105138955#31000002237-20")
 
 ft = tkFont.Font(family = 'Fixdsys',size = 18,weight = tkFont.BOLD)
 ft20 = tkFont.Font(family = 'Fixdsys',size = 21,weight = tkFont.BOLD)
@@ -323,7 +341,7 @@ ID_NO.grid(row = 0 ,column= 2)
 xinghao = tk.Label(countFm,text = '型号:',font = ft,anchor = tk.NW)  
 xinghao.grid(row = 1 ,column= 0)
 
-XH = tk.Entry(countFm,textvariable = v4,validate='focusout',validatecommand=test,invalidcommand=test1,font = ft)# 'focusout'
+XH = tk.Entry(countFm,textvariable = v4,validate='key',validatecommand=test,invalidcommand=test1,font = ft)# 'focusout'
 XH.grid(row = 1 ,column= 1)
 
 IDShuLiang_lb = tk.Label(countFm,text = '订单|指示书数量:',font = ft,anchor = tk.NW)
@@ -433,9 +451,9 @@ tree.bind('<Button-1>', treeviewClick)
 
 #插入演示数据
 def tree_data(values=[]):
-	for i in range(len(values)):
-		tree.insert('', i, values=values[i])
-	
+    for i in range(len(values)):
+        tree.insert('', i, values=values[i])
+
 
 val = [["1","000105138955","ELATD8-P9-B10","10","2018.5.2 10:10","./IMGS/000105138955_1.jpg"],["2","000105138955","ELATD8-P9-B10","20","2018.5.2 10:10","./IMGS/000105138955_2.jpg"]]
 tree_data(val)
