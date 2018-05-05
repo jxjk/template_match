@@ -102,13 +102,13 @@ def login_1():
         print(sel_data)
     except mysql.connector.Error as e:
         print('query error!{}'.format(e))
-    # finally:
-        # cursor.close()
-        # conn.close()
+    finally:
+        cursor.close()
+        conn.close()
 
     cv2.namedWindow('temp')
     try:
-        w,h = sel_data[0][1],sel_data[0][2]
+        w,h = sel_data[1],sel_data[2]
     except:
         w = 50
         h = 50
@@ -134,22 +134,42 @@ def login_1():
         k = cv2.waitKey(30) & 0xff
         print(k)
         if k == 13:# Enter
+            config = {'host':'127.0.0.1',
+                    'user':'root',
+                    'password':'abcd@1234',
+                    'port':'3306',
+                    'database':'test',
+                    'charset':'utf8'
+                    }
+            #型号 = '12' 
+            型号 = v4.get()
+            print(型号)
+            try:
+                conn = mysql.connector.Connect(**config)
+            except mysql.connector.Error as e:
+                print('connect fails!{}'.format(e))
+
+            cursor = conn.cursor()
 
             #增
             try:
-                sql = "Insert Into prov Values('%s','%d','%d',69)"
+                
+                print("test sql insert")
+                sql = "Insert Into test.prov Values(%s,%s,%s,69)"
                 cursor.execute(sql,(型号,w,h))
+                print(型号,w,h)
             except mysql.connector.Error as e:
                 print('Insert error!{}'.format(e))
                 
                 #改
                 try:
-                    sql = "Updata prov Set XH = %s , w = %s ,h = %s Where XH = %s"
+                    sql = "Update prov Set XH = %s , w = %s ,h = %s Where XH = %s"
                     cursor.execute(sql,(型号,w,h,型号))
                 except mysql.connector.Error as e:
-                    print('Insert error!{}'.format(e))
+                    print('Update error!{}'.format(e))
 
             finally:
+                conn.commit()
                 cursor.close()
                 conn.close()
 
@@ -215,13 +235,13 @@ def count_1():
         print(sel_data)
     except mysql.connector.Error as e:
         print('query error!{}'.format(e))
-    #finally:
-        #cursor.close()
-        #conn.close()
+    finally:
+        cursor.close()
+        conn.close()
 
     cv2.namedWindow("image")
     try:
-        w,h,threshold = sel_data[0][1],sel_data[0][2],sel_data[0][3]
+        w,h,threshold = sel_data[1],sel_data[2],sel_data[3]
     except:
         w = img1.shape[1]
         h = img1.shape[0]
@@ -310,23 +330,36 @@ def count_1():
         cv2.imshow("image",img)
         q = cv2.waitKey(50) & 0xff 
         if q == 13: # Enter
-            #增
+            config = {'host':'127.0.0.1',
+                    'user':'root',
+                    'password':'abcd@1234',
+                    'port':'3306',
+                    'database':'test',
+                    'charset':'utf8'
+                    }
+            #型号 = '12' 
+            型号 = v4.get()
+            print(型号)
             try:
-                sql = "Insert Into prov Values('%s','%d','%d',%d*100)"
-                cursor.execute(sql,(型号,w,h,threshold))
+                conn = mysql.connector.Connect(**config)
             except mysql.connector.Error as e:
-                print('Insert error!{}'.format(e))
-                
-                #改
-                try:
-                    sql = "Updata prov Set XH = %s , w = %s ,h = %s ,threshold = %d*100 Where XH = %s"
-                    cursor.execute(sql,(型号,w,h,型号))
-                except mysql.connector.Error as e:
-                    print('Insert error!{}'.format(e))
+                print('connect fails!{}'.format(e))
+
+            cursor = conn.cursor()
+
+            #改
+            try:
+                sql = "Update prov Set XH = %s , w = %s ,h = %s ,threshold = %s Where XH = %s"
+                cursor.execute(sql,(型号,w,h,int(threshold*100),型号))
+            except mysql.connector.Error as e:
+                print('Update error!{}'.format(e))
 
             finally:
+                conn.commit()
                 cursor.close()
                 conn.close()
+
+
 
             break
 
@@ -340,6 +373,7 @@ def zhaoHe_():
 def chaXun_():
     XH.configure(bg = 'blue')
     val = [["1","000105138955","ELATD8-P9-B10","10","2018.5.2 10:10","./IMGS/000105138955_1.jpg"],["2","000105138955","ELATD8-P9-B10","20","2018.5.2 10:10","./IMGS/000105138955_2.jpg"]]
+    delButton(tree)
     tree_data(val)
     pass
 
@@ -381,7 +415,7 @@ ID_NO.grid(row = 0 ,column= 2)
 xinghao = tk.Label(countFm,text = '型号:',font = ft,anchor = tk.NW)  
 xinghao.grid(row = 1 ,column= 0)
 
-XH = tk.Entry(countFm,textvariable = v4,validate='key',validatecommand=test,invalidcommand=test1,font = ft)# 'focusout'
+XH = tk.Entry(countFm,textvariable = v4,validate='focusout',validatecommand=test,invalidcommand=test1,font = ft)# 'focusout'
 XH.grid(row = 1 ,column= 1)
 
 IDShuLiang_lb = tk.Label(countFm,text = '订单|指示书数量:',font = ft,anchor = tk.NW)
@@ -488,13 +522,16 @@ def treeviewClick(event):
 tree.bind('<Button-1>', treeviewClick)
 
 
-
 #插入演示数据
 def tree_data(values=[]):
-    tree.configure()
-    print("delete tree")
     for i in range(len(values)):
         tree.insert('', i, values=values[i])
+
+
+def delButton(tree):
+    x = tree.get_children()
+    for item in x:
+        tree.delete(item)
 
 
 val = [["1","000105138955","ELATD8-P9-B10","10","2018.5.2 10:10","./IMGS/000105138955_1.jpg"],["2","000105138955","ELATD8-P9-B10","20","2018.5.2 10:10","./IMGS/000105138955_2.jpg"]]
