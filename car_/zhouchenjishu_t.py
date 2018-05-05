@@ -17,7 +17,6 @@ from PIL import ImageTk
 import mysql.connector
 
 
-
 def test():
     config = {'host':'127.0.0.1',
             'user':'root',
@@ -79,16 +78,33 @@ def nothing(x):
 
 
 def login_1():
-    # cap = cv2.VideoCapture('http://192.168.1.104:8080/shot.jpg')
+    config = {'host':'127.0.0.1',
+            'user':'root',
+            'password':'abcd@1234',
+            'port':'3306',
+            'database':'test',
+            'charset':'utf8'
+            }
+    #型号 = '12' 
     型号 = v4.get()
-    pathfile = r'dataBase/test.mdb'
-    tablename = r'prov'
-    conn = mdb_conn(pathfile)
-    cur = conn.cursor()
+    print(型号)
+    try:
+        conn = mysql.connector.Connect(**config)
+    except mysql.connector.Error as e:
+        print('connect fails!{}'.format(e))
 
+    cursor = conn.cursor()
 #查
-    sql = "SELECT * FROM " + tablename + " where 型号 = '" + 型号 +"'"
-    sel_data = mdb_sel(cur, sql)
+    try:
+        sql = "SELECT * FROM  prov WHERE XH = %s" 
+        cursor.execute(sql,(型号,))
+        sel_data = cursor.fetchone()
+        print(sel_data)
+    except mysql.connector.Error as e:
+        print('query error!{}'.format(e))
+    # finally:
+        # cursor.close()
+        # conn.close()
 
     cv2.namedWindow('temp')
     try:
@@ -100,7 +116,7 @@ def login_1():
     cv2.createTrackbar('w','temp',w,255,nothing)
     cv2.createTrackbar('h','temp',h,255,nothing)
     
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     #相机亮度、对比度、饱和度调整
     #cap.set(10,150)
     #cap.set(15,-1)
@@ -120,20 +136,23 @@ def login_1():
         if k == 13:# Enter
 
             #增
-            sql = "Insert Into " + tablename + " Values ('"+ 型号 +"', " + str(w) +", " + str(h)  + ", 69" +")"
-            print(sql)
-            if mdb_add(conn, cur, sql):
-                print("插入成功！")
-            else:
-                print("插入失败！")
+            try:
+                sql = "Insert Into prov Values('%s','%d','%d',69)"
+                cursor.execute(sql,(型号,w,h))
+            except mysql.connector.Error as e:
+                print('Insert error!{}'.format(e))
+                
                 #改
-                sql = "Update " + tablename + " Set 型号 = '" + 型号 + "', w = " + str(w) + ", h = " + str(h) + " where 型号 = '" + 型号 + "'" 
-                if mdb_modi(conn, cur, sql):
-                    print("修改成功！")
-                else:
-                    print("修改失败！")
-            cur.close()    #关闭游标
-            conn.close()   #关闭数据库连接
+                try:
+                    sql = "Updata prov Set XH = %s , w = %s ,h = %s Where XH = %s"
+                    cursor.execute(sql,(型号,w,h,型号))
+                except mysql.connector.Error as e:
+                    print('Insert error!{}'.format(e))
+
+            finally:
+                cursor.close()
+                conn.close()
+
             break
 
     roi = image[101:101+h,151:151+w]
@@ -174,15 +193,31 @@ def count_1():
         return()
     
     img1 = cv2.imread(r"./imgs/" + 型号 + 'temp.jpg',0)
-    
-    pathfile = r'dataBase/test.mdb'
-    tablename = r'prov'
-    conn = mdb_conn(pathfile)
-    cur = conn.cursor()
 
+    config = {'host':'127.0.0.1',
+            'user':'root',
+            'password':'abcd@1234',
+            'port':'3306',
+            'database':'test',
+            'charset':'utf8'
+            }
+    try:
+        conn = mysql.connector.Connect(**config)
+    except mysql.connector.Error as e:
+        print('connect fails!{}'.format(e))
+
+    cursor = conn.cursor()
 #查
-    sql = "SELECT * FROM " + tablename + " where 型号 = '" + 型号 +"'"
-    sel_data = mdb_sel(cur, sql)
+    try:
+        sql = "SELECT * FROM  prov WHERE XH = %s" 
+        cursor.execute(sql,(型号,))
+        sel_data = cursor.fetchone()
+        print(sel_data)
+    except mysql.connector.Error as e:
+        print('query error!{}'.format(e))
+    #finally:
+        #cursor.close()
+        #conn.close()
 
     cv2.namedWindow("image")
     try:
@@ -201,7 +236,7 @@ def count_1():
     cv2.createTrackbar('h','image',h,255,nothing)
     cv2.createTrackbar('threshold','image',threshold,100,nothing)
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     i=0
     while(1):
         ret,image1 = cap.read()
@@ -275,23 +310,26 @@ def count_1():
         cv2.imshow("image",img)
         q = cv2.waitKey(50) & 0xff 
         if q == 13: # Enter
-
             #增
-            sql = "Insert Into " + tablename + " Values ('"+ 型号 +"', " + str(w) +", " + str(h)  + ", " + str(threshold*100) +")"
-            print(sql)
-            if mdb_add(conn, cur, sql):
-                print("插入成功！")
-            else:
-                print("插入失败！")
+            try:
+                sql = "Insert Into prov Values('%s','%d','%d',%d*100)"
+                cursor.execute(sql,(型号,w,h,threshold))
+            except mysql.connector.Error as e:
+                print('Insert error!{}'.format(e))
+                
                 #改
-                sql = "Update " + tablename + " Set 型号 = '" + 型号 + "', w = " + str(w) + ", threshold = " + str(threshold*100) + ", h = " + str(h) + " where 型号 = '" + 型号 + "'" 
-                if mdb_modi(conn, cur, sql):
-                    print("修改成功！")
-                else:
-                    print("修改失败！")
-            cur.close()    #关闭游标
-            conn.close()   #关闭数据库连接
+                try:
+                    sql = "Updata prov Set XH = %s , w = %s ,h = %s ,threshold = %d*100 Where XH = %s"
+                    cursor.execute(sql,(型号,w,h,型号))
+                except mysql.connector.Error as e:
+                    print('Insert error!{}'.format(e))
+
+            finally:
+                cursor.close()
+                conn.close()
+
             break
+
     cv2.destroyAllWindows()
 
 
@@ -301,6 +339,8 @@ def zhaoHe_():
 
 def chaXun_():
     XH.configure(bg = 'blue')
+    val = [["1","000105138955","ELATD8-P9-B10","10","2018.5.2 10:10","./IMGS/000105138955_1.jpg"],["2","000105138955","ELATD8-P9-B10","20","2018.5.2 10:10","./IMGS/000105138955_2.jpg"]]
+    tree_data(val)
     pass
 
 
@@ -451,6 +491,8 @@ tree.bind('<Button-1>', treeviewClick)
 
 #插入演示数据
 def tree_data(values=[]):
+    tree.configure()
+    print("delete tree")
     for i in range(len(values)):
         tree.insert('', i, values=values[i])
 
