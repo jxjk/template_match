@@ -261,7 +261,7 @@ def count_1():
     while(1):
         ret,image1 = cap.read()
         i += 1
-        if i == 10:
+        if i == 20:
             break
     cap.release()
 
