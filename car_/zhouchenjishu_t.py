@@ -17,6 +17,18 @@ from PIL import ImageTk
 import mysql.connector
 
 
+def shuRuPanDuan(event=None):
+    sp = v6.get().split('@')
+    if len(sp) > 1:
+        v4.set(sp[1])
+        v3.set(sp[2])
+
+    else:
+        v5.set(sp[0].split('#')[0])
+
+    shuRu_NO.delete(0,tk.END)
+
+
 def test():
     config = {'host':'127.0.0.1',
             'user':'root',
@@ -25,9 +37,7 @@ def test():
             'database':'test',
             'charset':'utf8'
             }
-    #型号 = '12' 
     型号 = v4.get()
-    print(型号)
     try:
         conn = mysql.connector.Connect(**config)
     except mysql.connector.Error as e:
@@ -51,7 +61,6 @@ def test():
         global img
         img = Image.open(r"./imgs/" + v4.get() + 'temp.jpg')
         img = ImageTk.PhotoImage(img)
-        #img = tk.PhotoImage(file = r"./imgs/" + v4.get() + 'temp.gif')
         tuPian.configure(image=img)
         XH.configure(bg = 'blue')
         return True
@@ -151,7 +160,7 @@ def login_1():
 
             cursor = conn.cursor()
 
-            #增
+            #增	
             try:
                 
                 print("test sql insert")
@@ -162,7 +171,7 @@ def login_1():
                 print('Insert error!{}'.format(e))
                 
                 #改
-                try:
+                try:	
                     sql = "Update prov Set XH = %s , w = %s ,h = %s Where XH = %s"
                     cursor.execute(sql,(型号,w,h,型号))
                 except mysql.connector.Error as e:
@@ -173,7 +182,7 @@ def login_1():
                 cursor.close()
                 conn.close()
 
-            break
+            break	
 
     roi = image[101:101+h,151:151+w]
     
@@ -255,7 +264,7 @@ def count_1():
     cv2.createTrackbar('w','image',w,255,nothing)
     cv2.createTrackbar('h','image',h,255,nothing)
     cv2.createTrackbar('threshold','image',threshold,100,nothing)
-
+	
     cap = cv2.VideoCapture(0)
     i=0
     while(1):
@@ -284,7 +293,7 @@ def count_1():
         scale = 1
         font = cv2.FONT_HERSHEY_PLAIN
 
-        #寻找roi轮廓并作形状比较，<0.1 填充矩形
+        #寻找roi轮廓并作形状比较，<0.1 填充矩形	
         for resized in pyramid(img,scaleFactor):
             scale = float(img.shape[1]) / float(resized.shape[1])
             for (x,y,roi) in sliding_window(resized,20,(w,h)):
@@ -381,16 +390,11 @@ def chaXun_():
 root = tk.Tk()
 
 v1 = tk.StringVar()
-v2 = tk.StringVar()	
-v3 = tk.StringVar()
+v2 = tk.StringVar()
+v3 = tk.StringVar() #指示书数量
 v4 = tk.StringVar()
 v5 = tk.StringVar() # ID_NO
 v6 = tk.StringVar() # shuRu_NO
-#v4.set("test")
-#v3.set("30")
-#v4.set("ELATD8-P9-B10")
-#v5.set("000105138955")
-#v6.set("000105138955#31000002237-20")
 
 ft = tkFont.Font(family = 'Fixdsys',size = 18,weight = tkFont.BOLD)
 ft20 = tkFont.Font(family = 'Fixdsys',size = 21,weight = tkFont.BOLD)
@@ -415,7 +419,7 @@ ID_NO.grid(row = 0 ,column= 2)
 xinghao = tk.Label(countFm,text = '型号:',font = ft,anchor = tk.NW)  
 xinghao.grid(row = 1 ,column= 0)
 
-XH = tk.Entry(countFm,textvariable = v4,validate='focusout',validatecommand=test,invalidcommand=test1,font = ft)# 'focusout'
+XH = tk.Entry(countFm,textvariable = v4,validate='key',validatecommand=test,invalidcommand=test1,font = ft)# 'focusout'
 XH.grid(row = 1 ,column= 1)
 
 IDShuLiang_lb = tk.Label(countFm,text = '订单|指示书数量:',font = ft,anchor = tk.NW)
@@ -459,9 +463,9 @@ quit1.grid(row = 0,column= 5,padx =12,pady=5)
 shuRu_lb = tk.Label(root,text = "读取指示书&型号二维码：",font = ft12)  
 shuRu_lb.place(x=10, y=270, width=200, height=20)#.pack(padx =10,pady = 0)
 
-shuRu_NO = tk.Entry(root,textvariable = v6,font = ft12)
-shuRu_NO.focus_set()
+shuRu_NO = tk.Entry(root,textvariable=v6,validate='key',font = ft12)#,textvariable = v6
 shuRu_NO.place(x=210, y=270, width=730, height=20)#.pack(padx =10,pady = 0,fill = "x",)
+shuRu_NO.bind('<Return>',shuRuPanDuan)
 
 #使用Treeview组件实现表格功能
 
