@@ -1,4 +1,5 @@
 # --* coding: utf-8 *--
+import fnmatch
 import cv2
 import os
 import numpy as np 
@@ -50,6 +51,7 @@ def test():
         sql = "SELECT * FROM  prov WHERE XH = %s" 
         cursor.execute(sql,(型号,))
         sel_data = cursor.fetchone()
+
         print(sel_data)
     except mysql.connector.Error as e:
         print('query error!{}'.format(e))
@@ -68,6 +70,7 @@ def test():
     else:
         print('错误')
         img = Image.open(r"./imgs/temp.jpg")
+
         img = ImageTk.PhotoImage(img)
         tuPian.configure(image=img)
         XH.configure(bg = 'red')
@@ -187,29 +190,14 @@ def login_1():
     cv2.destroyAllWindows()
     cap.release()
 
-"""
-def static_vars(**kwargs):
-    def decorate(func):
-        for k in kwargs:
-            setattr(func,k,kwargs[k])
-        return func
-    return decorate
-
-
-@static_vars(counter = 0)
-"""
-
 
 def add_1():
+    #print('add')
+    
     if lbzsl.get() == '':
         v1.set('0')
     if lbdql.get() == '':
         v2.set('0')
-
-    result = int(lbzsl.get()) + int(lbdql.get())
-    v1.set(result)
-    #print('add')
-    
 
     config = {'host':'127.0.0.1',
             'user':'root',
@@ -222,6 +210,26 @@ def add_1():
         conn = mysql.connector.Connect(**config)
     except mysql.connector.Error as e:
         print('connect fails!{}'.format(e))
+
+    cursor = conn.cursor()
+#查
+    try:
+        sql = "SELECT * FROM  dinDan WHERE dinDanID = %s" 
+        cursor.execute(sql,(v5.get(),))
+        result = 0
+        while True:
+            row = cursor.fetchone()
+            if not row:
+                break
+            print(row[3])
+
+            result += row[3]
+        v1.set(result + int(v2.get()))
+
+    except mysql.connector.Error as e:
+        print('query error!{}'.format(e))
+    finally:
+        cursor.close()
 
     cursor = conn.cursor()
 #查
@@ -267,6 +275,7 @@ def add_1():
     tree_data(datetime)
 
     v2.set('0')
+    chaXun_()
     pass
 
 
@@ -446,18 +455,55 @@ def count_1():
 def zhaoHe_():
     if v1.get() == v3.get():
         print("zhaohechengong")
+        a = showinfo(title="照合", message="数量照合成功！")
+        v1.set(0)
+        v2.set(0)
+        v3.set(0)
+        v4.set("")
+        v5.set("")
+        shuRu_NO.focus_set()
+
     else:
+        a = showinfo(title="照合", message="数量错误，重新录入……")
         print("shuliangcuowu")
         os.chdir("./dinDan")
         cwd = os.getcwd()
         files = os.listdir(os.getcwd())
         for file in files:
-            if file.startwith("000105138955"):
-            #if file.startwith(str(v5.get())):
-                remove(file)
+            if fnmatch.fnmatch(file,str(v5.get() + '*')): 
+                print(file)
+                print(v5.get())
+                os.remove(file)
                 print(file + "deleted")
-        #os.chdir(./..)
+                pass
+        os.chdir(os.path.abspath(os.path.join(os.getcwd(),"..")))
+        v1.set(0)
+        v2.set(0)
+        config = {'host':'127.0.0.1',
+                'user':'root',
+                'password':'abcd@1234',
+                'port':'3306',
+                'database':'test',
+                'charset':'utf8'
+                }
+        dinDan_ID = v5.get()
+        try:
+            conn = mysql.connector.Connect(**config)
+        except mysql.connector.Error as e:
+            print('connect fails!{}'.format(e))
 
+        cursor = conn.cursor()
+    #删
+        try:
+            sql = "DELETE FROM  dinDan WHERE dinDanID = %s" 
+            cursor.execute(sql,(dinDan_ID,))
+            conn.commit()
+        except mysql.connector.Error as e:
+            print('query error!{}'.format(e))
+        finally:
+            cursor.close()
+            conn.close()
+        chaXun_()
     pass
 
 
