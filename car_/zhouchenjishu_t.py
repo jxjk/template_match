@@ -15,6 +15,7 @@ from tkinter.messagebox import *
 from PIL import Image
 from PIL import ImageTk
 import mysql.connector
+import datetime as dt
 
 
 def shuRuPanDuan(event=None):
@@ -108,7 +109,6 @@ def login_1():
         sql = "SELECT * FROM  prov WHERE XH = %s" 
         cursor.execute(sql,(型号,))
         sel_data = cursor.fetchone()
-        print(sel_data)
     except mysql.connector.Error as e:
         print('query error!{}'.format(e))
     finally:
@@ -141,7 +141,6 @@ def login_1():
         cv2.rectangle(image,(150,100),(150+w+2,100+h+2),(0,255,0),1)
         cv2.imshow('temp',image) 
         k = cv2.waitKey(30) & 0xff
-        print(k)
         if k == 13:# Enter
             config = {'host':'127.0.0.1',
                     'user':'root',
@@ -152,7 +151,6 @@ def login_1():
                     }
             #型号 = '12' 
             型号 = v4.get()
-            print(型号)
             try:
                 conn = mysql.connector.Connect(**config)
             except mysql.connector.Error as e:
@@ -162,11 +160,8 @@ def login_1():
 
             #增	
             try:
-                
-                print("test sql insert")
                 sql = "Insert Into test.prov Values(%s,%s,%s,69)"
                 cursor.execute(sql,(型号,w,h))
-                print(型号,w,h)
             except mysql.connector.Error as e:
                 print('Insert error!{}'.format(e))
                 
@@ -192,6 +187,19 @@ def login_1():
     cv2.destroyAllWindows()
     cap.release()
 
+"""
+def static_vars(**kwargs):
+    def decorate(func):
+        for k in kwargs:
+            setattr(func,k,kwargs[k])
+        return func
+    return decorate
+
+
+@static_vars(counter = 0)
+"""
+
+
 def add_1():
     if lbzsl.get() == '':
         v1.set('0')
@@ -200,8 +208,67 @@ def add_1():
 
     result = int(lbzsl.get()) + int(lbdql.get())
     v1.set(result)
-    v2.set('0')
     #print('add')
+    
+
+    config = {'host':'127.0.0.1',
+            'user':'root',
+            'password':'abcd@1234',
+            'port':'3306',
+            'database':'test',
+            'charset':'utf8'
+            }
+    try:
+        conn = mysql.connector.Connect(**config)
+    except mysql.connector.Error as e:
+        print('connect fails!{}'.format(e))
+
+    cursor = conn.cursor()
+#查
+    datetime = []
+    try:
+        sql = "SELECT max(NO) FROM  dinDan limit 0,1" 
+        cursor.execute(sql)
+        row = cursor.fetchone()
+
+    except mysql.connector.Error as e:
+        print('query error!{}'.format(e))
+    finally:
+        cursor.close()
+        
+    if row[0]:
+        ID = row[0] 
+    else:
+        ID = 0
+    dinDan_ID = v5.get()
+    xingHao = v4.get()
+    shuLiang = v2.get()
+    jiLuShiJian = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    name = v5.get() + '_' + str(ID + 1) + '.jpg'
+    imgad = "./dinDan/" + name
+
+    img = cv2.imread('./dinDan/temp.jpg')
+    cv2.imwrite("./dinDan/%s"%name,img)
+
+    cursor = conn.cursor()
+#增
+    try:
+        sql = "insert into test.dinDan values(%s,%s,%s,%s,%s,%s)" 
+        cursor.execute(sql,(int(ID + 1),dinDan_ID,xingHao,shuLiang,jiLuShiJian,imgad))
+    except mysql.connector.Error as e:
+        print('query error!{}'.format(e))
+    finally:
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+    datetime = [((ID + 1),dinDan_ID,xingHao,shuLiang,jiLuShiJian,imgad)]
+    delButton(tree)
+    tree_data(datetime)
+
+    v2.set('0')
+    pass
+
 
 
 def clear_():
@@ -210,7 +277,6 @@ def clear_():
 
 
 def count_1():
-    #global ret
     # cap = cv2.VideoCapture('http://192.168.1.104:8080/shot.jpg')
     
     型号 = v4.get()
@@ -264,7 +330,7 @@ def count_1():
     cv2.createTrackbar('w','image',w,255,nothing)
     cv2.createTrackbar('h','image',h,255,nothing)
     cv2.createTrackbar('threshold','image',threshold,100,nothing)
-	
+
     cap = cv2.VideoCapture(0)
     i=0
     while(1):
@@ -338,7 +404,11 @@ def count_1():
 
         cv2.imshow("image",img)
         q = cv2.waitKey(50) & 0xff 
+        
         if q == 13: # Enter
+            #name = v5.get()+v4.get()+'.jpg'
+            cv2.imwrite("./dinDan/temp.jpg",img)
+
             config = {'host':'127.0.0.1',
                     'user':'root',
                     'password':'abcd@1234',
@@ -346,9 +416,7 @@ def count_1():
                     'database':'test',
                     'charset':'utf8'
                     }
-            #型号 = '12' 
             型号 = v4.get()
-            print(型号)
             try:
                 conn = mysql.connector.Connect(**config)
             except mysql.connector.Error as e:
@@ -376,14 +444,58 @@ def count_1():
 
 
 def zhaoHe_():
+    if v1.get() == v3.get():
+        print("zhaohechengong")
+    else:
+        print("shuliangcuowu")
+        os.chdir("./dinDan")
+        cwd = os.getcwd()
+        files = os.listdir(os.getcwd())
+        for file in files:
+            if file.startwith("000105138955"):
+            #if file.startwith(str(v5.get())):
+                remove(file)
+                print(file + "deleted")
+        #os.chdir(./..)
+
     pass
 
 
 def chaXun_():
-    XH.configure(bg = 'blue')
-    val = [["1","000105138955","ELATD8-P9-B10","10","2018.5.2 10:10","./IMGS/000105138955_1.jpg"],["2","000105138955","ELATD8-P9-B10","20","2018.5.2 10:10","./IMGS/000105138955_2.jpg"]]
+    config = {'host':'127.0.0.1',
+            'user':'root',
+            'password':'abcd@1234',
+            'port':'3306',
+            'database':'test',
+            'charset':'utf8'
+            }
+    dinDan_ID = v5.get()
+    try:
+        conn = mysql.connector.Connect(**config)
+    except mysql.connector.Error as e:
+        print('connect fails!{}'.format(e))
+
+    cursor = conn.cursor()
+#查
+    datetime = []
+    try:
+        sql = "SELECT * FROM  dinDan WHERE dinDanID = %s" 
+        cursor.execute(sql,(dinDan_ID,))
+        while True:
+            row = cursor.fetchone()
+            if not row:
+                break
+            #print(row)
+            datetime.append(row)
+
+    except mysql.connector.Error as e:
+        print('query error!{}'.format(e))
+    finally:
+        cursor.close()
+        conn.close()
+
     delButton(tree)
-    tree_data(val)
+    tree_data(datetime)
     pass
 
 
@@ -464,6 +576,7 @@ shuRu_lb = tk.Label(root,text = "读取指示书&型号二维码：",font = ft12
 shuRu_lb.place(x=10, y=270, width=200, height=20)#.pack(padx =10,pady = 0)
 
 shuRu_NO = tk.Entry(root,textvariable=v6,validate='key',font = ft12)#,textvariable = v6
+shuRu_NO.focus_set()
 shuRu_NO.place(x=210, y=270, width=730, height=20)#.pack(padx =10,pady = 0,fill = "x",)
 shuRu_NO.bind('<Return>',shuRuPanDuan)
 
@@ -537,9 +650,6 @@ def delButton(tree):
     for item in x:
         tree.delete(item)
 
-
-val = [["1","000105138955","ELATD8-P9-B10","10","2018.5.2 10:10","./IMGS/000105138955_1.jpg"],["2","000105138955","ELATD8-P9-B10","20","2018.5.2 10:10","./IMGS/000105138955_2.jpg"]]
-tree_data(val)
 
 #运行程序，启动事件循环
 
